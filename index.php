@@ -3,16 +3,6 @@
 /* @var $db */
 /* @var $settings */
 
-// Delete if selected
-//if(isset($_GET['delete'])) {
-//    $table = $_GET['delete'];
-//    $db->query("DROP TABLE IF EXISTS `$table`")->execute();
-//}
-
-// Count records
-//$records = $db->query('SELECT COUNT(*) as num_records FROM `journeys`')->fetchOne();
-//dump($records);
-
 // HTML ----------------------------------------------------------------------------------------------------------------
 include 'includes/head.php';
 
@@ -31,32 +21,59 @@ if ($_SESSION['message'] ?? false) {
     </fieldset>
 </form>
 
-<!--<br>-->
-<!--<br>-->
-<!--<br>-->
 
-<!--<table>-->
-<!--    <tr>-->
-<!--        <th>-->
-<!--            Database:-->
-<!--        </th>-->
-<!--        <td colspan="2">-->
-<!--            --><?//=$settings['dbname']?>
-<!--        </td>-->
-<!--    </tr>-->
-<!--    --><?php //$rowspan = true; ?>
-<!--    --><?php //foreach ($tables as $table) { ?>
-<!--    --><?php //foreach ($table as $table_name) { ?>
-<!--    <tr>-->
-<!--        --><?php //if ($rowspan) { ?>
-<!--        <th rowspan="--><?//=count($tables)?><!--">Tables:</th>-->
-<!--        --><?php //$rowspan = false; ?>
-<!--        --><?php //} ?>
-<!--        <td>--><?//=$table_name?><!--</td>-->
-<!--        <td><a href="?delete=--><?//=$table_name?><!--">[Delete]</a></td>-->
-<!--    </tr>-->
-<!--    --><?php //} ?>
-<!--    --><?php //} ?>
-<!--</table>-->
+
+<?php
+
+// Get records
+$records = $db->query('SELECT * FROM `journeys`')->fetchAll();
+//dump($records);
+
+?>
+
+<br>:wq
+
+<p>
+    <a href="?view=data">Data</a> |
+    <a href="?view=calendar">Calendar</a>
+</p>
+
+<br>
+
+<?php if(($_GET['view'] ?? 'data') == 'data') { ?>
+
+<table>
+    <tr>
+        <th>Start</th>
+        <th>End</th>
+        <th>From</th>
+        <th>To</th>
+        <th>Duration</th>
+        <th>Distance</th>
+        <th>Efficiency</th>
+        <th>Speed</th>
+    </tr>
+    <?php foreach ($records as $record) { ?>
+    <tr>
+        <td><?= $record->start_date ?></td>
+        <td><?= $record->end_date ?></td>
+        <td><?= $record->start_location ?></td>
+        <td><?= $record->end_location ?></td>
+        <td><?= $record->duration ?></td>
+        <td><?= $record->distance ?></td>
+        <td><?= $record->efficiency ?></td>
+        <td><?= $record->speed ?></td>
+    </tr>
+    <?php } ?>
+</table>
+
+<?php } ?>
+
+
+<?php if(($_GET['view'] ?? 'data') == 'calendar') { ?>
+
+    Calendar
+
+<?php } ?>
 
 <?php include 'includes/foot.php';
