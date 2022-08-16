@@ -1,0 +1,17 @@
+{
+  "name": "maggsweb/maggsweb-journey-viewer",
+  "type": "project",
+  "description": "Journey data importer and viewer",
+  "keywords": [
+    "import",
+    "database"
+  ],
+  "license": "MIT",
+  "require": {
+    "php": "^7.4",
+    "maggsweb/maggsweb-pdo": "^2.0",
+    "symfony/var-dumper": "^5.3",
+    "ext-simplexml": "*",
+    "nesbot/carbon": "^2.61"
+  }
+}

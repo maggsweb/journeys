@@ -1,0 +1,30 @@
+
+html, body {
+    font-family: 'Open Sans', sans-serif;
+}
+
+h1 {
+    padding-bottom: 10px;
+    border-bottom: 1px dashed grey;
+}
+
+.grey {
+    color: lightgrey;
+}
+
+textarea {
+    width: 300px;
+    min-height: 200px;
+}
+
+table {
+    border-collapse: collapse;
+}
+th {
+    background-color: whitesmoke;
+}
+th,td {
+    border: 1px solid #ddd;
+    padding: 3px;
+}
+
