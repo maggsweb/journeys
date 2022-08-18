@@ -1,6 +1,7 @@
 <?php
 
 /* @var $settings */
+/* @var $queryString */
 
 ?>
 <!DOCTYPE html>
@@ -20,12 +21,11 @@
 <?php unset($_SESSION['message']); ?>
 <?php } ?>
 
+
 <p>
     <a href="/index.php">Home</a> |
     <a href="/import.php">Upload Data</a> |
-    <a href="/data.php">Data</a> |
-    <a href="/graph-speed-efficiency.php">Speed & Efficiency</a> |
-    <a href="/graph-trips.php">Trips</a>
+    <a href="/data.php<?=$queryString?>">Data</a> |
+    <a href="/graph-speed-efficiency.php<?=$queryString?>">Speed & Efficiency</a> |
+    <a href="/graph-trips.php<?=$queryString?>">Trips</a>
 </p>
-
-<br>

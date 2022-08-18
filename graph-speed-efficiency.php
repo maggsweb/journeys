@@ -1,14 +1,21 @@
 <?php
 
-/* @var $db */
-/* @var $settings */
-
 use Carbon\Carbon;
 
 include 'includes/bootstrap.php';
 
+/* @var $db */
+/* @var $settings */
+/* @var $filter */
+
+
 // Get records
-$records = $db->query("SELECT * FROM `{$settings['dbtable']}` ORDER BY start_date")->fetchAll();
+$sql = "SELECT * 
+        FROM `{$settings['dbtable']}` 
+        $filter
+        ORDER BY start_date";
+
+$records = $db->query($sql)->fetchAll();
 //dump($records);
 
 $data = [];
@@ -27,6 +34,7 @@ $data = json_encode($data);
 
 // -------------------------------------------------   HTML   ----------------------------------------------------------
 include 'includes/head.php';
+include 'includes/filters.php';
 
 ?>
 

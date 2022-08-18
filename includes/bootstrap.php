@@ -28,3 +28,25 @@ function clean($data): array
     }
     return $return;
 }
+
+$queryString = $_SERVER['QUERY_STRING'] ? '?' . $_SERVER['QUERY_STRING'] : '';
+
+/**
+ * @return string
+ */
+function generateFilters(): string
+{
+    $filters = [];
+    // Default month to today
+    $filters['ym'] = "start_date LIKE '".date('Y-m')."%'";
+    // Overwrite selected month
+    if (isset($_GET['month']) and preg_match('/^[0-9]{4}\-[0,1][0-9]$/', $_GET['month'])) {
+        $month = $_GET['month'];
+        $filters['ym'] = "start_date LIKE '$month%'";
+    }
+    return count($filters)
+        ? ' WHERE ' . implode(' AND ', $filters)
+        : '';
+}
+
+$filter = generateFilters();

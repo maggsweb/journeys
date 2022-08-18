@@ -1,16 +1,18 @@
 <?php
 
-/* @var $db */
-/* @var $settings */
-
 include 'includes/bootstrap.php';
 
+/* @var $db */
+/* @var $settings */
+/* @var $filter */
+
+// Get records
 $sql = "SELECT start_date, DATE_FORMAT(start_date, '%D %M %Y') as day, count(*) as num_trips, CEILING(sum(distance)) as sum_distance
         FROM `{$settings['dbtable']}`
+        $filter
         GROUP BY day
         ORDER BY start_date ASC";
 
-// Get records
 $records = $db->query($sql)->fetchAll();
 //dump($records);
 
@@ -32,6 +34,7 @@ $data = json_encode($data);
 
 // -------------------------------------------------   HTML   ----------------------------------------------------------
 include 'includes/head.php';
+include 'includes/filters.php';
 
 ?>
 
