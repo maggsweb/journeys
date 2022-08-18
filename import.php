@@ -7,6 +7,30 @@ include 'includes/bootstrap.php';
 /* @var $settings */
 /* @var $db */
 
+// Create table if it does not exist
+$table_exists = $db->query("SELECT 1 FROM `{$settings['dbtable']}` LIMIT 1")->execute();
+if (!$table_exists) {
+
+    $sql = "CREATE TABLE `{$settings['dbtable']}` (
+        start_date      datetime NOT NULL,
+        end_date        datetime NOT NULL,
+        start_location  varchar(255)  NOT NULL,
+        start_coords    varchar(100) NOT NULL,
+        end_location    varchar(255) NOT NULL,
+        end_coords      varchar(100) NOT NULL,
+        duration        varchar(20) NOT NULL,
+        distance        varchar(20) NOT NULL,
+        efficiency      varchar(20) NOT NULL,
+        speed           varchar(20) NOT NULL,
+        PRIMARY KEY (start_date) 
+    )";
+
+    $db->query($sql)->execute();
+
+    header("Location: ".$_SERVER['PHP_SELF']);
+    exit;
+}
+
 $insert_count = 0;
 
 // Process Generate SQL form
@@ -63,7 +87,7 @@ if (isset($_FILES['upload'])) {
         $end_date = Carbon::create($year,$month,$day,$hour,$min)->toDateTimeString();
 
         // Check if row exists
-        $exists = (bool) $db->query("SELECT COUNT(*) as num_rows FROM `journeys` WHERE start_date = :start_date LIMIT 1")
+        $exists = (bool) $db->query("SELECT COUNT(*) as num_rows FROM `{$settings['dbtable']}` WHERE start_date = :start_date LIMIT 1")
             ->bind(':start_date', $start_date)
             ->fetchOne();
 
@@ -81,7 +105,7 @@ if (isset($_FILES['upload'])) {
                 'efficiency' => $data[10],
                 'speed' => $data[11],
             ];
-            if ($db->insert('journeys', $insert)) {
+            if ($db->insert($settings['dbtable'], $insert)) {
                 $insert_count++;
             }
         }
@@ -92,8 +116,6 @@ if (isset($_FILES['upload'])) {
     header("Location: /");
     exit;
 }
-
-
 
 // -------------------------------------------------   HTML   ----------------------------------------------------------
 include 'includes/head.php';

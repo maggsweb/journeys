@@ -7,28 +7,30 @@ use Carbon\Carbon;
 
 include 'includes/bootstrap.php';
 
-if ($_SESSION['message'] ?? false) {
-    echo '<p>'.$_SESSION['message'].'</p>';
-    unset($_SESSION['message']);
-}
+// Only need to get Data if we are showing a 'view'
+if (isset($_GET['view'])) {
 
-// Get records
-$records = $db->query('SELECT * FROM `journeys` ORDER BY start_date')->fetchAll();
-//dump($records);
+    // @todo filters
 
-$data = [];
-$data[] = ['Date', 'Average Speed (mph)', 'Average Fuel Consumption (mpg)'];
-foreach($records as $record) {
-    $data[] = [
-        Carbon::createFromFormat('Y-m-d H:i:s', $record->start_date)->format('jS M y, g:ia'),
-        (float) $record->speed,
-        (float) $record->efficiency
-    ];
+    // Get records
+    $records = $db->query("SELECT * FROM `{$settings['dbtable']}` ORDER BY start_date")->fetchAll();
+    //dump($records);
+
+    $data = [];
+    $data[] = ['Date', 'Average Speed (mph)', 'Average Fuel Consumption (mpg)'];
+    foreach ($records as $record) {
+        $data[] = [
+            Carbon::createFromFormat('Y-m-d H:i:s', $record->start_date)->format('jS M y, g:ia'),
+            (float)$record->speed,
+            (float)$record->efficiency
+        ];
+    }
+    //if (count($data)) {
+        $data = json_encode($data);
+    //}
+    //    dump($data);
+
 }
-//if (count($data)) {
-    $data = json_encode($data);
-//}
-//    dump($data);
 
 // -------------------------------------------------   HTML   ----------------------------------------------------------
 include 'includes/head.php';
@@ -63,6 +65,24 @@ if(($_GET['view'] ?? '') == 'data') { ?>
 <?php } else if(($_GET['view'] ?? '') == 'speed-efficiency') { ?>
 
     <div id="google_chart"></div>
+
+<?php } else { ?>
+
+<?php
+// Stats..
+$num_records   = $db->query("SELECT count(*) as x FROM `{$settings['dbtable']}` ORDER BY start_date")->fetchOne();
+$earliest_date = $db->query("SELECT DATE_FORMAT(start_date, '%D %M %Y') as x FROM `{$settings['dbtable']}` ORDER BY start_date ASC LIMIT 1")->fetchOne();
+$latest_date   = $db->query("SELECT DATE_FORMAT(start_date, '%D %M %Y') as x FROM `{$settings['dbtable']}` ORDER BY start_date DESC LIMIT 1")->fetchOne();
+?>
+
+    <h2>Welcome..</h2>
+    <p>Currently holding <strong><?= $num_records ?></strong> records in DB
+        <?php if ($num_records) {?>
+        , from <strong><?= $earliest_date ?></strong> - <strong><?= $latest_date ?></strong>
+        <?php } else { ?>
+        .
+        <?php } ?>
+    </p>
 
 <?php } ?>
 
