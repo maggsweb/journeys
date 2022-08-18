@@ -1,6 +1,6 @@
 <?php
 
-session_start();
+//session_start();
 
 use Maggsweb\MyPDO;
 
@@ -44,4 +44,16 @@ if (!$journeys_table_exists) {
     header("Location: ".$_SERVER['PHP_SELF']);
     exit;
 
+}
+
+function clean($data): array
+{
+    $return = [];
+    foreach($data as $key => $value) {
+        $value = str_replace('"', '', $value);
+        $value = str_replace("\r", '', $value);
+        $value = str_replace("\n", '', $value);
+        $return[$key] = $value;
+    }
+    return $return;
 }

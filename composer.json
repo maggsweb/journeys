@@ -8,6 +8,7 @@
   ],
   "license": "MIT",
   "require": {
+    "ext-json": "*",
     "php": "^7.4",
     "maggsweb/maggsweb-pdo": "^2.0",
     "symfony/var-dumper": "^5.3",

@@ -1,108 +1,39 @@
-<?php include 'includes/bootstrap.php';
+<?php
 
 /* @var $db */
 /* @var $settings */
 
-// HTML ----------------------------------------------------------------------------------------------------------------
-include 'includes/head.php';
+use Carbon\Carbon;
+
+include 'includes/bootstrap.php';
 
 if ($_SESSION['message'] ?? false) {
     echo '<p>'.$_SESSION['message'].'</p>';
     unset($_SESSION['message']);
 }
 
-?>
-
-<form action="import.php" method="post" enctype="multipart/form-data">
-    <fieldset>
-        <legend>Upload CSV Journey data file</legend>
-        <input type="file" name="upload" required>
-        <button>Upload</button>
-    </fieldset>
-</form>
-
-
-
-<?php
-
 // Get records
 $records = $db->query('SELECT * FROM `journeys` ORDER BY start_date')->fetchAll();
 //dump($records);
 
-?>
-
-<br>
-
-
-
-<?php
-    $data = [];
-    $data[] = ['Date', 'Average Speed', 'Efficiency'];
-    foreach($records as $record) {
-        $data[] = [$record->start_date, (float)$record->speed, (float)$record->efficiency];
-    }
-    if (count($data)) {
-        $data = json_encode($data);
-    }
+$data = [];
+$data[] = ['Date', 'Average Speed (mph)', 'Average Fuel Consumption (mpg)'];
+foreach($records as $record) {
+    $data[] = [
+        Carbon::createFromFormat('Y-m-d H:i:s', $record->start_date)->format('jS M y, g:ia'),
+        (float) $record->speed,
+        (float) $record->efficiency
+    ];
+}
+//if (count($data)) {
+    $data = json_encode($data);
+//}
 //    dump($data);
-?>
 
-<div id="current_usage"></div>
+// -------------------------------------------------   HTML   ----------------------------------------------------------
+include 'includes/head.php';
 
-<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script>
-    google.load("visualization", "1", {packages:["CoreChart"], callback: drawCharts});
-    function drawCharts() {
-        drawChart_1();
-    }
-
-    function drawChart_1() {
-        let data = google.visualization.arrayToDataTable(<?=$data?>);
-        let options = {
-            //title:'Average Speed & Effiency',
-            legend: {
-                // position: "none"
-            },
-            height: 600,
-            colors: ['#326295', 'red'],
-            chartArea: {
-                top:30,
-                bottom: 80,
-            },
-            vAxis: {
-                //title: 'qwertgyhjuk'
-            },
-            hAxis: {
-                slantedText: true,
-                textStyle : {
-                    fontSize: 12
-                }
-            }
-        };
-        // var chart = new google.visualization.BarChart(document.getElementById('current_usage'));
-        let chart = new google.visualization.ColumnChart(document.getElementById('current_usage'));
-            chart.draw(data, options);
-    }
-
-    // $(document).ready(function(){
-
-        // $("a[href='#tab_1']").on('shown.bs.tab', function (e) {
-        //     drawChart_1();
-        // });
-    // });
-
-</script>
-
-
-<p>
-    <a href="?view=data">Data</a> |
-    <a href="?view=calendar">Calendar</a>
-</p>
-
-<br>
-
-<?php if(($_GET['view'] ?? 'data') == 'data') { ?>
+if(($_GET['view'] ?? '') == 'data') { ?>
 
 <table>
     <tr>
@@ -129,13 +60,76 @@ $records = $db->query('SELECT * FROM `journeys` ORDER BY start_date')->fetchAll(
     <?php } ?>
 </table>
 
-<?php } ?>
+<?php } else if(($_GET['view'] ?? '') == 'speed-efficiency') { ?>
 
-
-<?php if(($_GET['view'] ?? 'data') == 'calendar') { ?>
-
-    Calendar
+    <div id="google_chart"></div>
 
 <?php } ?>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        google.load("visualization", "1", {packages:["CoreChart"], callback: drawChart});
+        function drawChart() {
+            let data = google.visualization.arrayToDataTable(<?=$data?>);
+            let options = {
+                series:{
+                    0: {targetAxisIndex:0},
+                    1: {targetAxisIndex:1},
+                    2: {targetAxisIndex:1}
+                },
+                animation:{
+                    duration: 500,
+                    startup: true
+                },
+                //title:'Average Speed & Effiency',
+                legend: {
+                    // position: "none"
+                },
+                height: 600,
+                colors: ['blue', 'red'],
+                chartArea: {
+                    top:50,
+                    bottom: 80,
+                },
+                vAxes: {
+                    0: {
+                        // title: 'Average Speed (mph)',
+                        textStyle: {color: 'blue'},
+                        minorGridlines: 'none',
+                        // minorGridlines: {count: 8, color: '#ccc'},
+                        titleTextStyle: {
+                            color: 'blue'
+                        },
+                    },
+                    1: {
+                        // title: 'Average Fuel Consumption (mpg)',
+                        textStyle: {color: 'red'},
+                        minorGridlines: 'none',
+                        // minorGridlines: {count: 2, color: '#ccc'},
+                        titleTextStyle: {
+                            color: 'red'
+                        }
+                    },
+                },
+                vAxis: {
+                    ticks: [0, 10, 20, 30, 40, 50, 60, 70]
+                    // gridlines: {
+                    //     color: 'transparent'
+                    // }
+                    //title: 'qwertgyhjuk'
+                },
+                hAxis: {
+                    slantedText: true,
+                    textStyle : {
+                        fontSize: 12
+                    }
+                }
+            };
+            let chart = new google.visualization.ColumnChart(document.getElementById('google_chart'));
+            chart.draw(data, options);
+        }
+    </script>
 
 <?php include 'includes/foot.php';

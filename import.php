@@ -86,21 +86,23 @@ if (isset($_FILES['upload'])) {
             }
         }
     }
+
+    $_SESSION['message'] = "Inserted $insert_count records";
+
+    header("Location: /");
+    exit;
 }
 
-$_SESSION['message'] = "Inserted $insert_count records";
 
-header("Location: /");
-exit;
 
-function clean($data): array
-{
-    $return = [];
-    foreach($data as $key => $value) {
-        $value = str_replace('"', '', $value);
-        $value = str_replace("\r", '', $value);
-        $value = str_replace("\n", '', $value);
-        $return[$key] = $value;
-    }
-    return $return;
-}
+// -------------------------------------------------   HTML   ----------------------------------------------------------
+include 'includes/head.php';
+?>
+
+<form action="" method="post" enctype="multipart/form-data">
+    <fieldset>
+        <legend>Upload CSV Journey data file</legend>
+        <input type="file" name="upload" required>
+        <button>Upload</button>
+    </fieldset>
+</form>
