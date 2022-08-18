@@ -35,6 +35,10 @@ include 'includes/head.php';
     <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script>
+
+        let color1 = '#3366cc'; // blue
+        let color2 = '#CC334A'; // red
+
         google.load("visualization", "1", {packages:["CoreChart"], callback: drawChart});
         function drawChart() {
             let data = google.visualization.arrayToDataTable(<?=$data?>);
@@ -53,7 +57,7 @@ include 'includes/head.php';
                     // position: "none"
                 },
                 height: 600,
-                colors: ['blue', 'red'],
+                colors: [color1, color2],
                 chartArea: {
                     top:50,
                     bottom: 80,
@@ -61,20 +65,24 @@ include 'includes/head.php';
                 vAxes: {
                     0: {
                         // title: 'Average Speed (mph)',
-                        textStyle: {color: 'blue'},
+                        textStyle: {
+                            color: color1
+                        },
                         minorGridlines: 'none',
                         // minorGridlines: {count: 8, color: '#ccc'},
                         titleTextStyle: {
-                            color: 'blue'
+                            color: color1
                         },
                     },
                     1: {
                         // title: 'Average Fuel Consumption (mpg)',
-                        textStyle: {color: 'red'},
+                        textStyle: {
+                            color: color2
+                        },
                         minorGridlines: 'none',
                         // minorGridlines: {count: 2, color: '#ccc'},
                         titleTextStyle: {
-                            color: 'red'
+                            color: color2
                         }
                     },
                 },

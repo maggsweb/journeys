@@ -3,8 +3,6 @@
 /* @var $db */
 /* @var $settings */
 
-use Carbon\Carbon;
-
 include 'includes/bootstrap.php';
 
 $sql = "SELECT start_date, DATE_FORMAT(start_date, '%D %M %Y') as day, count(*) as num_trips, CEILING(sum(distance)) as sum_distance
@@ -17,11 +15,16 @@ $records = $db->query($sql)->fetchAll();
 //dump($records);
 
 $data = [];
-$data[] = ['Date', 'Total Distance (miles)'];
+$data[] = [
+    ['type' => 'string', 'label' => 'Date'],
+    ['type' => 'number', 'label' => 'Total Distance (miles)'],
+    ['type' => 'string', 'role' => 'tooltip']//,  'p' => ['html' => true]]
+];
 foreach ($records as $record) {
     $data[] = [
         $record->day,
-        (float)$record->sum_distance
+        (float) $record->sum_distance,
+        "$record->day \n Trips: $record->num_trips \n Distance: $record->sum_distance miles"
     ];
 }
 $data = json_encode($data);
@@ -33,21 +36,6 @@ include 'includes/head.php';
 ?>
 
     <div id="google_chart"></div>
-
-    <table>
-        <tr>
-            <th>Day</th>
-            <th>Trips</th>
-            <th>Total distance (miles)</th>
-        </tr>
-        <?php foreach ($records as $record) { ?>
-            <tr>
-                <td><?= Carbon::createFromFormat('Y-m-d H:i:s',$record->start_date)->format('jS F Y') ?></td>
-                <td><?= $record->num_trips ?></td>
-                <td><?= $record->sum_distance ?></td>
-            </tr>
-        <?php } ?>
-    </table>
 
     <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
