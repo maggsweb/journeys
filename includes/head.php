@@ -23,8 +23,9 @@
 <p>
     <a href="/index.php">Home</a> |
     <a href="/import.php">Upload Data</a> |
-    <a href="/index.php?view=data">Data</a> |
-    <a href="/index.php?view=speed-efficiency">Speed & Efficiency</a>
+    <a href="/data.php">Data</a> |
+    <a href="/graph-speed-efficiency.php">Speed & Efficiency</a> |
+    <a href="/graph-trips.php">Trips</a>
 </p>
 
 <br>
